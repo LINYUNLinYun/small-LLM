@@ -1,9 +1,13 @@
 from torch import nn
 import torch.nn.functional as F
 import torch
+from multiHeadAttention import MultiHeadAttention
+from otherNet import LayerNorm, PositionalEncoding, MLP
+from encoderAndDecoder import Encoder, Decoder
+from modelArgs import ModelArgs
 
 class Transformer(nn.Module):
-   '''整体模型'''
+    '''整体模型'''
     def __init__(self, args):
         super().__init__()
         # 必须输入词表大小和 block size
@@ -48,27 +52,31 @@ class Transformer(nn.Module):
     '''前向计算函数'''
     def forward(self, idx, targets=None):
         # 输入为 idx，维度为 (batch size, sequence length, 1)；targets 为目标序列，用于计算 loss
+        # 获取输入的设备
         device = idx.device
         b, t = idx.size()
         assert t <= self.args.block_size, f"不能计算该序列，该序列长度为 {t}, 最大序列长度只有 {self.args.block_size}"
 
+        temp_is_print = False
         # 通过 self.transformer
         # 首先将输入 idx 通过 Embedding 层，得到维度为 (batch size, sequence length, n_embd)
-        print("idx",idx.size())
         # 通过 Embedding 层
         tok_emb = self.transformer.wte(idx)
-        print("tok_emb",tok_emb.size())
         # 然后通过位置编码
         pos_emb = self.transformer.wpe(tok_emb) 
         # 再进行 Dropout
         x = self.transformer.drop(pos_emb)
         # 然后通过 Encoder
-        print("x after wpe:",x.size())
         enc_out = self.transformer.encoder(x)
-        print("enc_out:",enc_out.size())
+        if temp_is_print:
+            print("idx",idx.size())
+            print("tok_emb",tok_emb.size())
+            print("x after wpe:",x.size())
+            print("enc_out:",enc_out.size())
         # 再通过 Decoder
         x = self.transformer.decoder(x, enc_out)
-        print("x after decoder:",x.size())
+        if temp_is_print:
+            print("x after decoder:",x.size())
 
         if targets is not None:
             # 训练阶段，如果我们给了 targets，就计算 loss
