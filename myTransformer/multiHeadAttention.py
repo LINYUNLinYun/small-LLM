@@ -45,7 +45,7 @@ class MultiHeadAttention(nn.Module):
 
         # 将 Q、K、V 拆分成多头，维度为 (B, seqlen, n_head, head_dim)，然后交换维度，变成 (B, n_head, seqlen, head_dim)
         # 因为在注意力计算中我们是取了后两个维度参与计算
-        # 为什么是先展开后转置而不是反过来？
+        # 为什么是先展开后转置
         xq = xq.view(bsz, seqlen, self.n_heads, self.head_dim)
         xk = xk.view(bsz, seqlen, self.n_heads, self.head_dim)
         xv = xv.view(bsz, seqlen, self.n_heads, self.head_dim)
