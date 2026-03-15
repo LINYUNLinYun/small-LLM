@@ -10,7 +10,7 @@ class ModelConfig(PretrainedConfig):
             n_kv_heads: int = 8, # 键值头的数量
             vocab_size: int = 6144, # 词汇表大小
             hidden_dim: int = None, # 隐藏层维度
-            multiple_of: int = 64,  # 按多少倍数对齐
+            multiple_of: int = 64,  # 按多少倍数对齐 看GPU硬件
             norm_eps: float = 1e-5, # 归一化层的eps
             max_seq_len: int = 512, # 最大序列长度
             dropout: float = 0.0, # dropout概率
