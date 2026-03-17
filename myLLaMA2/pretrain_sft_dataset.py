@@ -2,15 +2,15 @@ from torch.utils.data import Dataset
 import json
 import numpy as np
 import torch
-from .train_tokenizer import read_texts_from_jsonl
 
 
 class PretrainDataset(Dataset):
-    def __init__(self, data_path, tokenizer, max_length=512):
+    def __init__(self, data_path, tokenizer, max_length=512, max_samples=None):
         super().__init__()
         self.data_path = data_path
         self.tokenizer = tokenizer
         self.max_length = max_length
+        self.max_samples = max_samples
         self.padding = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else 0
         # 预计算每行的起始字节偏移量
         self._offsets = []
@@ -18,6 +18,8 @@ class PretrainDataset(Dataset):
             self._offsets.append(0)
             while f.readline():
                 self._offsets.append(f.tell())
+                if self.max_samples is not None and len(self._offsets) - 1 >= self.max_samples:
+                    break
         self._total_lines = len(self._offsets) - 1  # 最后一个 tell() 是 EOF
 
     def __len__(self):
@@ -44,17 +46,20 @@ class PretrainDataset(Dataset):
         return torch.from_numpy(X), torch.from_numpy(Y), torch.from_numpy(loss_mask)
 
 class SFTDataset(Dataset):
-    def __init__(self, data_path, tokenizer, max_length=512):
+    def __init__(self, data_path, tokenizer, max_length=512, max_samples=None):
         super().__init__()
         self.data_path = data_path
         self.tokenizer = tokenizer
         self.max_length = max_length
+        self.max_samples = max_samples
         self.padding = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else 0
         self._offsets = []
         with open(data_path, 'rb') as f:
             self._offsets.append(0)
             while f.readline():
                 self._offsets.append(f.tell())
+                if self.max_samples is not None and len(self._offsets) - 1 >= self.max_samples:
+                    break
         self._total_lines = len(self._offsets) - 1 
 
     def __len__(self):

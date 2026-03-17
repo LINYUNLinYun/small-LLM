@@ -15,15 +15,15 @@ def split_text(text, chunk_size=512):
     """将文本按指定长度切分成块"""
     return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
 
-with open(output_pretrain_data, 'a', encoding='utf-8') as pretrain:
-    with open(pretrain_data, 'r', encoding='utf-8') as f:
-        data = f.readlines()
-        for line in tqdm(data, desc=f"Processing lines in {pretrain_data}", leave=False):  # 添加行级别的进度条
-            line = json.loads(line)
-            text = line['text']
-            chunks = split_text(text)
-            for chunk in chunks:
-                pretrain.write(json.dumps({'text': chunk}, ensure_ascii=False) + '\n')
+def process_pretrain_data(input_path, output_path):
+    with open(output_path, 'a', encoding='utf-8') as pretrain:
+        with open(input_path, 'r', encoding='utf-8') as f:
+            for line in tqdm(f, desc=f"Processing lines in {input_path}", unit="lines", leave=False):
+                line = json.loads(line)
+                text = line['text']
+                chunks = split_text(text)
+                for chunk in chunks:
+                    pretrain.write(json.dumps({'text': chunk}, ensure_ascii=False) + '\n')
 
 # 2 处理SFT数据
 def convert_message(data):
@@ -40,10 +40,19 @@ def convert_message(data):
             message.append({'role': 'assistant', 'content': item['value']})
     return message
 
-with open(output_sft_data, 'a', encoding='utf-8') as sft:
-    with open(sft_data, 'r', encoding='utf-8') as f:
-        data = f.readlines()
-        for item in tqdm(data, desc="Processing", unit="lines"):
-            item = json.loads(item)
-            message = convert_message(item['conversations'])
-            sft.write(json.dumps(message, ensure_ascii=False) + '\n')
+def process_sft_data(input_path, output_path):
+    with open(output_path, 'a', encoding='utf-8') as sft:
+        with open(input_path, 'r', encoding='utf-8') as f:
+            for item in tqdm(f, desc="Processing", unit="lines"):
+                item = json.loads(item)
+                message = convert_message(item['conversations'])
+                sft.write(json.dumps(message, ensure_ascii=False) + '\n')
+
+
+def main():
+    process_pretrain_data(pretrain_data, output_pretrain_data)
+    process_sft_data(sft_data, output_sft_data)
+
+
+if __name__ == '__main__':
+    main()

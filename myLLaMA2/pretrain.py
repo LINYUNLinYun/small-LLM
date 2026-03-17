@@ -15,8 +15,13 @@ from transformers import AutoTokenizer
 
 from llama2 import ModelConfig, LLaMA2
 from pretrain_sft_dataset import PretrainDataset
+import logging
 
 import swanlab
+
+# 配置日志
+logging.basicConfig(level=logging.INFO)
+Logger = logging.getLogger(__name__)
 
 def get_lr(it, all):
     """
@@ -115,7 +120,7 @@ def train_epoch(epoch):
         if step % args.log_interval == 0:
             spend_time = time.time() - start_time
             # 打印训练进度信息
-            Logger(
+            Logger.info(
                 'Epoch:[{}/{}]({}/{}) loss:{:.3f} lr:{:.7f} epoch_Time:{}min;'.format(
                     epoch + 1,
                     args.epochs,
@@ -185,12 +190,12 @@ def init_model():
     tokenizer = AutoTokenizer.from_pretrained('./tokenizer_k/')
 
     # 根据配置创建Transformer模型
-    model = Transformer(lm_config)
+    model = LLaMA2(lm_config)
     
     # 多卡初始化：检查可用GPU数量并设置DataParallel
     num_gpus = torch.cuda.device_count()
     if num_gpus > 1:
-        Logger(f"Using {num_gpus} GPUs with DataParallel!")
+        Logger.info(f"Using {num_gpus} GPUs with DataParallel!")
         # 使用DataParallel包装模型以支持多GPU训练
         model = torch.nn.DataParallel(model)
     
@@ -198,7 +203,7 @@ def init_model():
     model = model.to(args.device)
     
     # 计算并打印模型参数量（以百万为单位）
-    Logger(f'LLM总参数量：{count_parameters(model) / 1e6:.3f} 百万')
+    Logger.info(f'LLM总参数量：{count_parameters(model) / 1e6:.3f} 百万')
     return model, tokenizer
 
 
@@ -218,6 +223,7 @@ if __name__ == "__main__":
     parser.add_argument("--use_swanlab", action="store_true", help="是否使用SwanLab进行实验跟踪")
     parser.add_argument("--num_workers", type=int, default=8, help="数据加载的工作进程数")
     parser.add_argument("--data_path", type=str, default="./seq_monkey_datawhale.jsonl", help="训练数据路径")
+    parser.add_argument("--max_samples", type=int, default=None, help="仅使用前N条样本进行训练")
     
     # 训练优化参数
     parser.add_argument("--accumulation_steps", type=int, default=8, help="梯度累积步数")
@@ -281,7 +287,13 @@ if __name__ == "__main__":
     model, tokenizer = init_model()
     
     # 创建训练数据集
-    train_ds = PretrainDataset(args.data_path, tokenizer, max_length=max_seq_len)
+    train_ds = PretrainDataset(
+        args.data_path,
+        tokenizer,
+        max_length=max_seq_len,
+        max_samples=args.max_samples,
+        
+    )
     
     # 创建数据加载器
     train_loader = DataLoader(
