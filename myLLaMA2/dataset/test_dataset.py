@@ -35,10 +35,24 @@ def read_conversations_from_jsonl(file_path: str) -> Generator[list[dict], None,
                 print(e)
                 continue
 
+# 截取jsonl文件的前几个并保存为新的jsonl文件，方便测试
+def save_sample_jsonl(input_path: str, output_path: str, num_samples: int = 5) -> None:
+    """从输入JSONL文件中提取前num_samples行并保存到新的JSONL文件"""
+    with open(output_path, 'w', encoding='utf-8') as out_file:
+        with open(input_path, 'r', encoding='utf-8') as in_file:
+            for line_num, line in enumerate(in_file, 1):
+                if line_num > num_samples:
+                    break
+                out_file.write(line)
+
 # 测试jsonl读取函数
 if __name__ == "__main__":
-    dataset_path = "./seq-monkey/mobvoi_seq_monkey_general_open_corpus.jsonl"
+    dataset_path = "input/seq_monkey_dealed.jsonl"
     count = 0
+
+    # sample_output_path = "input/sample_pretrain.jsonl"
+    # save_sample_jsonl(dataset_path, sample_output_path, num_samples=100)
+    # exit()
     for text in read_texts_from_jsonl(dataset_path):
         print(f"Pretrain sample {count + 1}:")
         print(text)
@@ -46,7 +60,6 @@ if __name__ == "__main__":
         count += 1
         if count >= 5:  # 只打印前5行文本进行测试
             break
-
     # 测试sft数据集,json格式
     sft_dataset_path = "seq-monkey/BelleGroup/train_3.5M_CN.json"
     count = 0

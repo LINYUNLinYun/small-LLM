@@ -1,3 +1,5 @@
 myTransformer/__pycache__/
 **/__pycache__/
 myLLaMA2/dataset/seq-monkey/
+myLLaMA2/dataset/*/*.json
+myLLaMA2/dataset/*/*.jsonl

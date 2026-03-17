@@ -184,7 +184,7 @@ def main():
         data_path=data_path,
         save_dir=save_dir,
         vocab_size=6144, 
-        # max_lines=100000  # 不应该限制的 训练时间不长的话
+        # max_lines=100000  # 不应该限制的 训练时间不长or内存足够的话
     )
 
     # 评估tokenizer
