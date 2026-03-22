@@ -107,8 +107,10 @@ def train_tokenizer(data_path: str, save_dir: str, vocab_size: int = 8192, max_l
 
     # 训练tokenizer
     print(f"Training tokenizer with data from {data_path}")
-    texts = read_texts_from_jsonl(data_path, max_lines=max_lines)  # 限制训练数据量为10万行
-    tokenizer.train_from_iterator(texts, trainer=trainer, length=os.path.getsize(data_path))
+    texts = read_texts_from_jsonl(data_path, max_lines=max_lines)
+    # length 表示样本条数，不是文件字节数；传错会导致进度条总数异常。
+    progress_total = max_lines if max_lines is not None else None
+    tokenizer.train_from_iterator(texts, trainer=trainer, length=progress_total)
 
     # 验证特殊token映射
     try:
@@ -176,15 +178,18 @@ def eval_tokenizer(tokenizer_path: str) -> None:
 
 def main():
     # 配置路径
-    data_path = "./seq-monkey/mobvoi_seq_monkey_general_open_corpus.jsonl"
+    data_path = "./input/seq_monkey_dealed.jsonl"
     save_dir = "tokenizer_k"
-
+    # 打印语料的行数
+    with open(data_path, 'r', encoding='utf-8') as f:
+        line_count = sum(1 for _ in f)
+    print(f"Total lines in training data: {line_count}")
     # 训练tokenizer
     train_tokenizer(
         data_path=data_path,
         save_dir=save_dir,
         vocab_size=6144, 
-        # max_lines=100000  # 不应该限制的 训练时间不长or内存足够的话
+        max_lines=3000000  # 不应该限制的 训练时间不长or内存足够的话
     )
 
     # 评估tokenizer

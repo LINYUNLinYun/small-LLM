@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 # pretrain_data 为运行download_dataset.sh时，下载的pretrain_data本地路径
 pretrain_data = 'seq-monkey/mobvoi_seq_monkey_general_open_corpus.jsonl'
-output_pretrain_data = 'input/seq_monkey_dealed_2.jsonl'
+output_pretrain_data = 'input/seq_monkey_dealed.jsonl'
 
 # sft_data 为运行download_dataset.sh时，下载的sft_data本地路径
 sft_data = 'seq-monkey/BelleGroup/train_3.5M_CN.json'
@@ -50,8 +50,8 @@ def process_sft_data(input_path, output_path):
 
 
 def main():
-    process_pretrain_data(pretrain_data, output_pretrain_data)
-    # process_sft_data(sft_data, output_sft_data)
+    # process_pretrain_data(pretrain_data, output_pretrain_data)
+    process_sft_data(sft_data, output_sft_data)
 
 
 if __name__ == '__main__':

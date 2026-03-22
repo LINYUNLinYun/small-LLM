@@ -187,7 +187,7 @@ def init_model():
         return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
     # 从本地路径加载预训练的分词器
-    tokenizer = AutoTokenizer.from_pretrained('./tokenizer_k/')
+    tokenizer = AutoTokenizer.from_pretrained('./dataset/tokenizer_k/')
 
     # 根据配置创建Transformer模型
     model = LLaMA2(lm_config)
@@ -253,8 +253,8 @@ if __name__ == "__main__":
     if args.use_swanlab:
         # 注意：使用前需要先登录 swanlab.login(api_key='your key')
         run = swanlab.init(
-            project="Happy-LLM",  # 项目名称
-            experiment_name="Pretrain-215M",  # 实验名称
+            project="small-LLM",  # 项目名称
+            experiment_name="myLLaMA-Pretrain-215M",  # 实验名称
             config=args,  # 保存所有超参数
         )
 
@@ -320,3 +320,12 @@ if __name__ == "__main__":
     # 开始训练循环
     for epoch in range(args.epochs):
         train_epoch(epoch)
+    
+    nowtime = time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime())
+    model.eval()  # 切换到评估模式
+    # 构建检查点文件名
+    ckp = f'{args.save_dir}/pretrain_{lm_config.dim}_{lm_config.n_layers}_{lm_config.vocab_size}_{nowtime}.pth'
+
+    # 处理多卡保存：如果是DataParallel模型，需要访问.module属性
+    state_dict = model.module.state_dict() if isinstance(model, torch.nn.DataParallel) else model.state_dict()
+    torch.save(state_dict, ckp)
