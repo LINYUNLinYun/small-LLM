@@ -11,7 +11,7 @@ my implemenntation of happy-LLM
 2. 手动实现embedding层（分词器）
 
 
-## 预训练语言模型 -- 未完成
+## 预训练语言模型 -- 已完成
 承接上一部分，transformer架构是一种encoder-decoder的架构。编码器解码器具有不同的结构。针对 Encoder、Decoder 的特点，引入 ELMo(embedding from language model)的预训练思路，开始出现不同的、对 Transformer 进行优化的思路。
 > 例如，Google 仅选择了 Encoder 层，通过将 Encoder 层进行堆叠，再提出不同的预训练任务-掩码语言模型（Masked Language Model，MLM），打造了一统自然语言理解（Natural Language Understanding，NLU）任务的代表模型——BERT。而 OpenAI 则选择了 Decoder 层，使用原有的语言模型（Language Model，LM）任务，通过不断增加模型参数和预训练语料，打造了在 NLG（Natural Language Generation，自然语言生成）任务上优势明显的 GPT 系列模型，也是现今大火的 LLM 的基座模型。当然，还有一种思路是同时保留 Encoder 与 Decoder，打造预训练的 Transformer 模型，例如由 Google 发布的 T5模型。
 
@@ -46,10 +46,15 @@ Decoder-Only 就是目前大火的 LLM 的基础架构，目前所有的 LLM 基
 4. 逐步推理。LLM 通过采用思维链（Chain-of-Thought，CoT）推理策略，可以利用包含中间推理步骤的提示机制来解决复杂任务
 5. 多语言支持，因为训练语料包含多国语言。长文本理解，分布式集群训练+具有外推能力的位置编码；拓展多模态；幻觉，可通过prompt+RAG缓解。
 
-### 如何训练一个LLM
-
 ### 预训练 pretrain
 它们的预训练任务也都沿承了 GPT 模型的经典预训练任务——因果语言模型（Causal Language Model，CLM）。而且具有夸张的模型参数量以及训练语料，高达上千亿参数（GPT3 175B参数 300B数据量）。
 
+## 大模型训练流程实践
+在myLLaMA2中已经手动实现了一边模型的数据采集、预处理、pretrain、sft的流程。接下来将训练的是大模型训练过程中的实践流程。
+
+本节，将熟悉领域的主流训练框架 Transformers，并结合分布式框架 deepspeed、高效微调框架 peft 等主流框架，实践使用 transformers 进行模型 Pretrain、SFT 全流程，更好地对接业界的主流 LLM 技术方案。
+
+### pretrain
+已完成，见 qwen/pro_dataset.py 和 qwen/pretrain.py
 
 
