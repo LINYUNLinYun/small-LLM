@@ -170,7 +170,7 @@ def main():
 
     # 文本 tokenize
     column_names = list(ds["train"].features)
-    logger.info('训练集特征：', column_names)
+    logger.info(f'训练集特征：{column_names}')
     text_column_name = "text" if "text" in column_names else column_names[0]
 
     # tokenize 函数

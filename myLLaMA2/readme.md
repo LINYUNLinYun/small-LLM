@@ -43,7 +43,7 @@ Rot(\theta)=
 \end{bmatrix}
 $$
 
-对于维度为 $d$ 的向量 $\mathbf{q} = [q_0, q_1, \dots, q_{d-1}]^T$，RoPE 将其划分为 $d/2$ 个二维子空间，每一组分量 $(q_{2i}, q_{2i+1})$ 通过旋转矩阵进行变换。即：
+对于维度为 $d$ 的向量$\mathbf{q} = [q_0, q_1, \dots, q_{d-1}]^T$，RoPE 将其划分为$d/2$ 个二维子空间，每一组分量 $(q_{2i}, q_{2i+1})$ 通过旋转矩阵进行变换。即：
 
 $$
 \begin{bmatrix}
@@ -74,7 +74,7 @@ $\mathbf{R}_{n-m}$ 代表的是相对旋转角度为 $(n-m)\theta_i$的旋转矩
 因此，最终的点积结果只依赖于 **$n-m$**（即 Query 和 Key 之间的相对距离），而不是它们的绝对位置 $m$ 和 $n$。
 
 
-令$\mathbf{q} = [q_0, q_1, q_2, q_3, \dots]$，旋转后的 $\mathbf{q}'$ 为：
+令$\mathbf{q} = [q_0, q_1, q_2, q_3, \dots]$，旋转后的 $\mathbf{q}'$为：
 
 $$
 \begin{aligned}

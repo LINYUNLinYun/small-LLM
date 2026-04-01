@@ -19,3 +19,4 @@ python pretrain.py
 “ZeRO” 代表 Zero Redundancy Optimizer（零冗余优化器）
 
 ## 微调
+修改了若干错误。。
