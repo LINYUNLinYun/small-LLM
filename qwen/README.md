@@ -18,5 +18,15 @@ python pretrain.py
 ### deepspeed分布式训练与 ZeRO优化器
 “ZeRO” 代表 Zero Redundancy Optimizer（零冗余优化器）
 
-## 微调
+## sft微调
 修改了若干错误。。
+
+## LORA微调
+
+### LoRA 原理
+emmmm暂时省略。只需记住，在wq和wv上应用效果比较好。
+
+### 代码实现
+1. 确定要应用lora的层，peft 库目前支持调用 LoRA 的层包括：nn.Linear、nn.Embedding、nn.Conv2d 三种。
+2. 在这些层的基础上增加一个旁路，模拟参数更新
+3. 冻结原参数
