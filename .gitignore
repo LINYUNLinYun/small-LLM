@@ -5,3 +5,4 @@ myLLaMA2/dataset/*/*.json
 myLLaMA2/dataset/*/*.jsonl
 *.pth
 qwen/models
+*.env

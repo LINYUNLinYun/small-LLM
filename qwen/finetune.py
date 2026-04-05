@@ -9,7 +9,7 @@ import sys
 from dataclasses import dataclass, field
 from torch.utils.data.datapipes.iter import IterableWrapper     # api changed
 from itertools import chain
-import deepspeed
+# import deepspeed
 from typing import Optional,List,Dict
 from torch.utils.data import Dataset
 import json
